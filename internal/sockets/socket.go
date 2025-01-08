@@ -8,12 +8,20 @@ import (
 )
 
 func SoketsIO(app *fiber.App) {
+
+	clients := make(map[string]string)
+
 	socketio.On(socketio.EventConnect, func (ep *socketio.EventPayload) {
-		fmt.Println("connection event 1 -user: %s", ep.Kws.GetStringAttribute("user_id"))
+		fmt.Printf("connection event 1 -user: %s", ep.Kws.GetStringAttribute("user_id"))
 	})
 
 	socketio.On(socketio.EventDisconnect, func (ep *socketio.EventPayload){
-		
-		
+		delete(clients, ep.Kws.GetStringAttribute(("user_id")))
+
+		fmt.Printf("Disconnection event - User: %s", ep.Kws.GetStringAttribute("user_id"))
 	})
+
+	app.Get("/ws/", socketio.New(func(kws *socketio.Websocket) {
+		
+	}))
 }
