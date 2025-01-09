@@ -3,28 +3,35 @@ package main
 import (
 	"chat/internal/router"
 	"chat/internal/sockets"
-	"fmt"
+	"log"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 )
 
+// MessageObject Basic chat message object
+type MessageObject struct {
+    Data  string `json:"data"`
+    From  string `json:"from"`
+    Event string `json:"event"`
+    To    string `json:"to"`
+}
+
 func main() {
-	app := fiber.New()
+    app := fiber.New()
 
-	app.Use("/ws",func(c *fiber.Ctx) error{
-		if websocket.IsWebSocketUpgrade(c){
-			c.Locals("allowed", true)
-			c.Next()
-		}
-		return fiber.ErrUpgradeRequired
-	})
+    app.Use(func(c *fiber.Ctx) error {
 
-	sockets.SoketsIO(app)
+        if websocket.IsWebSocketUpgrade(c) {
+            c.Locals("allowed", true)
+            return c.Next()
+        }
+        return fiber.ErrUpgradeRequired
+    })
 
-	router.Routes(app)
+    sockets.SoketsIO(app)
 
-	if err:= app.Listen("localhost:1212"); err != nil{
-		fmt.Printf("error to start server : %v", err)
-	}
+    router.Routes(app)
+
+    log.Fatal(app.Listen(":3000"))
 }
