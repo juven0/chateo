@@ -77,17 +77,6 @@ func SoketsIO(app *fiber.App) {
         fmt.Printf("Error event - User: %s", ep.Kws.GetStringAttribute("user_id"))
     })
 
-    app.Get("/ws/", socketio.New(func(kws *socketio.Websocket) {
-
-        // userId := kws.Params("id")
-
-        // clients[userId] = kws.UUID
-
-        // kws.SetAttribute("user_id", userId)
-
-        kws.Broadcast([]byte(fmt.Sprintf("New user connected:  and UUID: %s", kws.UUID)), true, socketio.TextMessage)
-       
-        kws.Emit([]byte(fmt.Sprintf("Hello user: with UUID: %s", kws.UUID)), socketio.TextMessage)
-    }))
+    app.Get("/ws/:id", socketio.New(func(kws *socketio.Websocket){Setup(kws, &clients )}))
 
 }
