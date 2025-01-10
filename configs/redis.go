@@ -27,7 +27,7 @@ func LoadRedisconfig() *redisConfig {
 	}
 }
 
-func RedisConnectio(config *redis.Options) *redis.Client {
+func RedisConnection(config *redis.Options) *redis.Client {
 	redisClient := redis.NewClient(config)
 	return redisClient
 }
