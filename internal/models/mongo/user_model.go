@@ -1,4 +1,4 @@
-package mongo
+package mongomodels
 
 type User struct {
 	Id        string `json:"id" bson:"_id"`

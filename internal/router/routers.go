@@ -10,4 +10,5 @@ func Routes(a *fiber.App){
 	route := a.Group("/api/v1")
 
 	route.Get("/",handler.WellcomeHandler)
+	route.Post("/user/create/", handler.CreatUserHandler)
 }
