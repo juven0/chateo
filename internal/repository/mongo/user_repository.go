@@ -61,8 +61,15 @@ func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
 	return result, nil
 }
 
-func DeleteUser(){
-	
+func DeleteUser(id string)(*mongo.DeleteResult, error){
+	userId,_ :=primitive.ObjectIDFromHex(id)
+	filter := bson.D{{Key: "_id", Value: userId}}
+
+	result, err := userCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		return &mongo.DeleteResult{}, err
+	}
+	return result, nil
 }
 
 
