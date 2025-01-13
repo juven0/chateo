@@ -2,6 +2,7 @@ package configs
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,16 +11,16 @@ import (
 
 
 type dbConfig struct {
-	Port     string
+	// Port     string
 	MongoURI string
-	Database string
+	// Database string
 }
 
 func Loadconfig() *dbConfig {
 	return &dbConfig{
-		Port: os.Getenv("mongoPort"),
+		// Port: os.Getenv("mongoPort"),
 		MongoURI: os.Getenv("mongoUri"),
-		Database: os.Getenv("mongoName"),
+		// Database: os.Getenv("mongoName"),
 	}
 }
 
@@ -28,5 +29,6 @@ func MongoConnection(uri string) *mongo.Client{
 	if err != nil{
 		panic(err)
 	}
+	fmt.Println("connected to mongodb")
 	return client
 }
