@@ -15,7 +15,7 @@ func InitUserRepository(db *mongo.Database){
 	userCollection = db.Collection("user")
 }
 
-func InsertUser(user mongomodels.User)error{
+func InsertUser(user *mongomodels.User)error{
 	_, err := userCollection.InsertOne(ctx, user)
 	return err
 }

@@ -9,12 +9,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func CreatUser(user mongomodels.User){
+func CreatUser(user *mongomodels.User) error{
+	
 	err := godotenv.Load()
     if err != nil {
         panic(err)
     }
+
     mongoURI := os.Getenv("mongoUri")
 	mongoClient := configs.MongoConnection(mongoURI)
 	mongorepository.InitUserRepository(mongoClient.Database("chat"))
+
+	return mongorepository.InsertUser(user)
 }
