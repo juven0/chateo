@@ -20,8 +20,18 @@ func CreatUserHandler(c *fiber.Ctx)error{
 
 	err := mongoservice.CreatUser(user)
 	if err != nil{
-		return c.Status(500).SendString("error to create user")
+		return c.Status(500).JSON(fiber.Map{"error": err})
 		
 	}
 	return c.Status(200).SendString("user created with succes")
+}
+
+func GetOneUserHandler(c *fiber.Ctx)error{
+	id:= c.Params("id")
+
+	userFund, err:= mongoservice.GetUser(id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err})
+	}
+	return c.Status(200).JSON(fiber.Map{"user": userFund})
 }

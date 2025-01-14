@@ -11,4 +11,5 @@ func Routes(a *fiber.App){
 
 	route.Get("/",handler.WellcomeHandler)
 	route.Post("/user/create/", handler.CreatUserHandler)
+	route.Get("/user/:id", handler.GetOneUserHandler)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -17,6 +18,10 @@ type dbConfig struct {
 }
 
 func Loadconfig() *dbConfig {
+	err := godotenv.Load()
+    if err != nil {
+        panic(err)
+    }
 	return &dbConfig{
 		// Port: os.Getenv("mongoPort"),
 		MongoURI: os.Getenv("mongoUri"),
@@ -24,8 +29,9 @@ func Loadconfig() *dbConfig {
 	}
 }
 
-func MongoConnection(uri string) *mongo.Client{
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+func MongoConnection() *mongo.Client{
+	mongoConfig := Loadconfig()
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoConfig.MongoURI))
 	if err != nil{
 		panic(err)
 	}

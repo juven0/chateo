@@ -4,21 +4,34 @@ import (
 	"chat/configs"
 	mongomodels "chat/internal/models/mongo"
 	mongorepository "chat/internal/repository/mongo"
-	"os"
 
-	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var mongoClient = configs.MongoConnection()
+const tableName = "chat"
+
+func setup() {
+	mongorepository.InitUserRepository(mongoClient.Database(tableName))
+}
+
+
 func CreatUser(user *mongomodels.User) error{
-	
-	err := godotenv.Load()
-    if err != nil {
-        panic(err)
-    }
-
-    mongoURI := os.Getenv("mongoUri")
-	mongoClient := configs.MongoConnection(mongoURI)
-	mongorepository.InitUserRepository(mongoClient.Database("chat"))
-
+	setup()
 	return mongorepository.InsertUser(user)
+}
+
+func GetUser(id string)(mongomodels.User, error){
+	setup()
+	return mongorepository.GetUser(id)
+}
+
+func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
+	setup()
+	return mongorepository.UpdateUser(id, user)
+}
+
+func DeleteUser(id string)(*mongo.DeleteResult, error){
+	setup()
+	return mongorepository.DeleteUser(id)
 }
