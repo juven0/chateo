@@ -23,9 +23,6 @@ func LoadRedisconfig() *redisConfig {
     }
 
 	// protocol , err := strconv.Atoi(os.Getenv("redisPortocol"))
-	if err != nil{
-		panic(err)
-	}
 	return &redisConfig{
 		Addr: os.Getenv("residAddr"),
 		Password: os.Getenv("redisPassword"),

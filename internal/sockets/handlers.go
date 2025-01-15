@@ -26,7 +26,7 @@ func Setup(kws *socketio.Websocket, clients *map[string]string) {
 
 	val, err := redisCilent.Get(ctx, userId).Result()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	kws.SetAttribute("user_id", userId)

@@ -1,6 +1,9 @@
 package sockets
 
 import (
+	"chat/configs"
+	mongomodels "chat/internal/models/mongo"
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -75,6 +78,26 @@ func SoketsIO(app *fiber.App) {
 
     socketio.On(socketio.EventError, func(ep *socketio.EventPayload) {
         fmt.Printf("Error event - User: %s", ep.Kws.GetStringAttribute("user_id"))
+    })
+
+    socketio.On("SEND_MESSAGE_TO", func(ep *socketio.EventPayload){
+        ctx := context.Background()
+	    redisCilent := configs.RedisConnection()
+
+        newMessage := mongomodels.Message{}
+
+        err := json.Unmarshal(ep.Data, &newMessage)
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        val, err := redisCilent.Get(ctx, newMessage.To.String()).Result()
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+
+        ep.Kws.EmitTo(val, []byte(ep.Data),socketio.TextMessage )
     })
 
     app.Get("/ws/:id", socketio.New(func(kws *socketio.Websocket){Setup(kws, &clients )}))
