@@ -26,7 +26,7 @@ func SoketsIO(app *fiber.App) {
     // Custom event handling supported
     socketio.On("CUSTOM_EVENT", func(ep *socketio.EventPayload) {
         fmt.Printf("Custom event - User: %s", ep.Kws.GetStringAttribute("user_id"))
-       
+ 
     })
 
     // On message event

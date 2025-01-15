@@ -1,9 +1,10 @@
 package configs
 
 import (
+	"fmt"
 	"os"
-	"strconv"
 
+	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -15,7 +16,13 @@ type redisConfig struct {
 }
 
 func LoadRedisconfig() *redisConfig {
-	protocol , err := strconv.Atoi(os.Getenv("redisPortocol"))
+
+	err := godotenv.Load()
+    if err != nil {
+        panic(err)
+    }
+
+	// protocol , err := strconv.Atoi(os.Getenv("redisPortocol"))
 	if err != nil{
 		panic(err)
 	}
@@ -23,11 +30,16 @@ func LoadRedisconfig() *redisConfig {
 		Addr: os.Getenv("residAddr"),
 		Password: os.Getenv("redisPassword"),
 		DB: os.Getenv("residDB"),
-		Protocol: protocol,
+		Protocol: 2,
 	}
 }
 
-func RedisConnection(config *redis.Options) *redis.Client {
-	redisClient := redis.NewClient(config)
-	return redisClient
+func RedisConnection() *redis.Client {
+	config := LoadRedisconfig()
+	opt, err := redis.ParseURL(config.Addr)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("connected to redis")
+	return redis.NewClient(opt)
 }
