@@ -1,37 +1,34 @@
 package mongoservice
 
 import (
-	"chat/configs"
 	mongomodels "chat/internal/models/mongo"
 	mongorepository "chat/internal/repository/mongo"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var mongoClient = configs.MongoConnection()
-const tableName = "chat"
 
-func setup() {
+
+func setupUserService() {
 	mongorepository.InitUserRepository(mongoClient.Database(tableName))
 }
 
-
 func CreatUser(user *mongomodels.User) error{
-	setup()
+	setupUserService()
 	return mongorepository.InsertUser(user)
 }
 
 func GetUser(id string)(mongomodels.User, error){
-	setup()
+	setupUserService()
 	return mongorepository.GetUser(id)
 }
 
 func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
-	setup()
+	setupUserService()
 	return mongorepository.UpdateUser(id, user)
 }
 
 func DeleteUser(id string)(*mongo.DeleteResult, error){
-	setup()
+	setupUserService()
 	return mongorepository.DeleteUser(id)
 }

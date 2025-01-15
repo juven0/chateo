@@ -38,10 +38,27 @@ func GetAllMessageConversation(idConversation string)([]mongomodels.Message, err
 	return messages, err
 }
 
-func GetOneMessage(idConversation string, idMessage string){
+func GetOneMessage(idMessage string)(mongomodels.Message, error){
+	idMess, _ := primitive.ObjectIDFromHex(idMessage)
 
+	filter := bson.D{{Key: "_id", Value: idMess}}
+	
+	var message mongomodels.Message
+	err := messageCollection.FindOne(ctx, filter).Decode(&message)
+	if err != nil{
+		return mongomodels.Message{}, err
+	}
+	return message , nil
 }
 
-func DeletMessage(idConversation string, idMessage string){
+func DeletMessage(idMessage string)(*mongo.DeleteResult, error){
+	id , _:= primitive.ObjectIDFromHex(idMessage)
 
+	filtre := bson.D{{Key: "_id", Value: id}}
+
+	result, err :=messageCollection.DeleteOne(ctx, filtre)
+	if err!= nil {
+		return &mongo.DeleteResult{}, err
+	}
+	return result, nil
 }
