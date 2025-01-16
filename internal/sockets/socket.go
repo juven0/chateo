@@ -3,6 +3,7 @@ package sockets
 import (
 	"chat/configs"
 	mongomodels "chat/internal/models/mongo"
+	mongoservice "chat/internal/service/mongo"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -34,6 +35,8 @@ func SoketsIO(app *fiber.App) {
 
     // On message event
     socketio.On(socketio.EventMessage, func(ep *socketio.EventPayload) {
+        // ctx := context.Background()
+	    // redisCilent := configs.RedisConnection()
 
         fmt.Printf("Message event - User: %s - Message: %s", ep.Kws.GetStringAttribute("user_id"), string(ep.Data))
 
@@ -56,7 +59,13 @@ func SoketsIO(app *fiber.App) {
             ep.Kws.Fire(message.Event, []byte(message.Data))
         }
 
-        err = ep.Kws.EmitTo(clients[message.To], ep.Data, socketio.TextMessage)
+        // val, err := redisCilent.Get(ctx, message.To).Result()
+        // if err != nil {
+        //     fmt.Println(err)
+        //     return
+        // }
+
+        err = ep.Kws.EmitTo(message.To, ep.Data, socketio.TextMessage)
         if err != nil {
             fmt.Println(err)
         }
@@ -85,6 +94,7 @@ func SoketsIO(app *fiber.App) {
 	    redisCilent := configs.RedisConnection()
 
         newMessage := mongomodels.Message{}
+        mongoservice.CreateMessage(&newMessage)
 
         err := json.Unmarshal(ep.Data, &newMessage)
         if err != nil {
