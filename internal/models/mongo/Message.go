@@ -11,7 +11,7 @@ type Message struct {
 	ConversationID primitive.ObjectID `bson:"conversation_id" json:"conversationId"`
 	SenderID       primitive.ObjectID `bson:"sender_id" json:"senderId"`
 	//temporary
-	To primitive.ObjectID `bson:"recever_id" json:"receverId"`
+	To 			   primitive.ObjectID `bson:"recever_id" json:"receverId"`
 	Content        string             `bson:"content" json:"content"`
 	Type           string             `bson:"type" json:"type" validate:"oneof=text image file"`
 	ReadBy         []ReadReceipt      `bson:"read_by" json:"readBy"`

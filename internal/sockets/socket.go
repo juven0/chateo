@@ -13,7 +13,7 @@ import (
 )
 
 type MessageObject struct {
-    Data  string `json:"data"`
+    Data  json.RawMessage `json:"data"`
     From  string `json:"from"`
     Event string `json:"event"`
     To    string `json:"to"`
@@ -30,25 +30,13 @@ func SoketsIO(app *fiber.App) {
     // Custom event handling supported
     socketio.On("CUSTOM_EVENT", func(ep *socketio.EventPayload) {
         fmt.Printf("Custom event - User: %s", ep.Kws.GetStringAttribute("user_id"))
- 
     })
 
     // On message event
     socketio.On(socketio.EventMessage, func(ep *socketio.EventPayload) {
-        // ctx := context.Background()
-	    // redisCilent := configs.RedisConnection()
-
-        fmt.Printf("Message event - User: %s - Message: %s", ep.Kws.GetStringAttribute("user_id"), string(ep.Data))
-
+        
         message := MessageObject{}
 
-        // Unmarshal the json message
-        // {
-        //  "from": "<user-id>",
-        //  "to": "<recipient-user-id>",
-        //  "event": "CUSTOM_EVENT",
-        //  "data": "hello"
-        //}
         err := json.Unmarshal(ep.Data, &message)
         if err != nil {
             fmt.Println(err)
@@ -59,23 +47,13 @@ func SoketsIO(app *fiber.App) {
             ep.Kws.Fire(message.Event, []byte(message.Data))
         }
 
-        // val, err := redisCilent.Get(ctx, message.To).Result()
-        // if err != nil {
-        //     fmt.Println(err)
-        //     return
-        // }
-
-        err = ep.Kws.EmitTo(message.To, ep.Data, socketio.TextMessage)
-        if err != nil {
-            fmt.Println(err)
-        }
     })
 
     
     socketio.On(socketio.EventDisconnect, func(ep *socketio.EventPayload) {
        
         delete(clients, ep.Kws.GetStringAttribute("user_id"))
-        fmt.Printf("Disconnection event - User: %s", ep.Kws.GetStringAttribute("user_id"))
+        fmt.Printf("Disconnection event - User: `%s", ep.Kws.GetStringAttribute("user_id"))
     })
 
     
@@ -90,18 +68,26 @@ func SoketsIO(app *fiber.App) {
     })
 
     socketio.On("SEND_MESSAGE_TO", func(ep *socketio.EventPayload){
+
         ctx := context.Background()
 	    redisCilent := configs.RedisConnection()
 
-        newMessage := mongomodels.Message{}
-        mongoservice.CreateMessage(&newMessage)
+        fmt.Println("SEND_MESSAGE_TO called")
 
-        err := json.Unmarshal(ep.Data, &newMessage)
+        newMessage := mongomodels.Message{}
+        err := json.Unmarshal([]byte(ep.Data), &newMessage)
         if err != nil {
             fmt.Println(err)
             return
         }
-        val, err := redisCilent.Get(ctx, newMessage.To.String()).Result()
+        fmt.Printf("Unmarsahal JSON: %s\n", string(ep.Data))
+        err = mongoservice.CreateMessage(&newMessage)
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        fmt.Println(newMessage.To.Hex())
+        val, err := redisCilent.Get(ctx, newMessage.To.Hex()).Result()
         if err != nil {
             fmt.Println(err)
             return
