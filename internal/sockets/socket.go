@@ -72,8 +72,6 @@ func SoketsIO(app *fiber.App) {
         ctx := context.Background()
 	    redisCilent := configs.RedisConnection()
 
-        fmt.Println("SEND_MESSAGE_TO called")
-
         newMessage := mongomodels.Message{}
         err := json.Unmarshal([]byte(ep.Data), &newMessage)
         if err != nil {
