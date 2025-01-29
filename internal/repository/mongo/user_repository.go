@@ -23,9 +23,9 @@ type MongoUserRepository struct{
 
 var ctx = context.TODO()
 
-func InitUserRepository(db *mongo.Database) MongoUserRepository {
-	return MongoUserRepository{
-		collection: db.Collection("user"),
+func NewUserRepository(db *mongo.Database) UserRepository {
+	return &MongoUserRepository{
+		collection: db.Collection("users"), // Nom de la collection MongoDB
 	}
 }
 
