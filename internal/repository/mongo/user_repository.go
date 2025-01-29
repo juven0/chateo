@@ -10,34 +10,46 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var userCollection *mongo.Collection
-var ctx = context.TODO()
-
-func InitUserRepository(db *mongo.Database){
-	userCollection = db.Collection("user")
+type UserRepository interface {
+	InsertUser(user *mongomodels.User) error
+	GetUser(id string) (mongomodels.User, error)
+	UpdateUser(id string, user *mongomodels.User) (*mongo.UpdateResult, error)
+	DeleteUser(id string) (*mongo.DeleteResult, error)
 }
 
-func InsertUser(user *mongomodels.User)error{
-	_, err := userCollection.InsertOne(ctx, user)
+type MongoUserRepository struct{
+	collection *mongo.Collection
+}
+
+var ctx = context.TODO()
+
+func InitUserRepository(db *mongo.Database) MongoUserRepository {
+	return MongoUserRepository{
+		collection: db.Collection("user"),
+	}
+}
+
+func (r *MongoUserRepository)InsertUser(user *mongomodels.User)error{
+	_, err := r.collection.InsertOne(ctx, user)
 	return err
 }
 
-func GetAllUser (){
-	filter := bson.D{}
-	userCollection.Find(ctx, filter)
-}
+// func  (r *MongoUserRepository)GetAllUser (){
+// 	filter := bson.D{}
+// 	r.collection.Find(ctx, filter)
+// }
 
-func GetUser(id string)(mongomodels.User, error){
+func  (r *MongoUserRepository)GetUser(id string)(mongomodels.User, error){
 	filter := bson.D{{Key: "_id", Value: id}}
 	var userFind mongomodels.User
-	err := userCollection.FindOne(ctx, filter).Decode(&userFind)
+	err := r.collection.FindOne(ctx, filter).Decode(&userFind)
 	if err != nil {
 		return mongomodels.User{}, err 
 	}
 	return userFind, nil
 }
 
-func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
+func  (r *MongoUserRepository)UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
 	userId , _:= primitive.ObjectIDFromHex(id)
 
 	filtre := bson.D{{Key: "_id", Value: userId}}
@@ -53,7 +65,7 @@ func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
 		},
 	}
 
-	result, err := userCollection.UpdateOne(ctx, filtre, update)
+	result, err := r.collection.UpdateOne(ctx, filtre, update)
 	if err != nil {
 		return &mongo.UpdateResult{}, err 
 	}
@@ -61,11 +73,11 @@ func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
 	return result, nil
 }
 
-func DeleteUser(id string)(*mongo.DeleteResult, error){
+func  (r *MongoUserRepository)DeleteUser(id string)(*mongo.DeleteResult, error){
 	userId,_ :=primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: userId}}
 
-	result, err := userCollection.DeleteOne(ctx, filter)
+	result, err := r.collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return &mongo.DeleteResult{}, err
 	}

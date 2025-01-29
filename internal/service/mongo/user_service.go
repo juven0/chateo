@@ -4,31 +4,50 @@ import (
 	mongomodels "chat/internal/models/mongo"
 	mongorepository "chat/internal/repository/mongo"
 
+	"sync"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+type UserService struct {
+	repo mongorepository.UserRepository
+}
 
+var(
+	userServiceInstance *UserService
+	once sync.Once
+)
+
+func GetUserServiceInstace()*UserService{
+	once.Do(func(){
+		repository := mongorepository.InitUserRepository(mongoClient.Database(tableName))
+		userServiceInstance = &UserSevice{
+			repo: repository,
+		}
+	})
+	return userServiceInstance
+}
 
 func setupUserService() {
 	mongorepository.InitUserRepository(mongoClient.Database(tableName))
 }
 
-func CreatUser(user *mongomodels.User) error{
+func (r *UserService)CreatUser(user *mongomodels.User) error{
 	setupUserService()
-	return mongorepository.InsertUser(user)
+	return r.repo.InsertUser(user)
 }
 
-func GetUser(id string)(mongomodels.User, error){
+func (r *UserService)GetUser(id string)(mongomodels.User, error){
 	setupUserService()
-	return mongorepository.GetUser(id)
+	return r.repo.GetUser(id)
 }
 
-func UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
+func (r *UserService)UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
 	setupUserService()
-	return mongorepository.UpdateUser(id, user)
+	return r.repo.UpdateUser(id, user)
 }
 
-func DeleteUser(id string)(*mongo.DeleteResult, error){
+func (r *UserService)DeleteUser(id string)(*mongo.DeleteResult, error){
 	setupUserService()
-	return mongorepository.DeleteUser(id)
+	return r.repo.DeleteUser(id)
 }
