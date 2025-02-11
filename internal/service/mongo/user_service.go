@@ -4,8 +4,6 @@ import (
 	mongomodels "chat/internal/models/mongo"
 	mongorepository "chat/internal/repository/mongo"
 
-	"sync"
-
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -15,7 +13,6 @@ type UserService struct {
 
 var(
 	userServiceInstance *UserService
-	once sync.Once
 )
 
 func GetUserServiceInstace()*UserService{

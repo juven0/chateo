@@ -7,18 +7,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+var UserService =  mongoservice.GetUserServiceInstace()
+
+
 func WellcomeHandler(c *fiber.Ctx)error{
 	return c.SendString("firste go fiber apps")
 }
 
-func CreatUserHandler(c *fiber.Ctx)error{
+func CreatUserHandler(c *fiber.Ctx)error{	
 	user := &mongomodels.User{} 
 
 	if err := c.BodyParser(user); err!= nil{
 		return c.SendString("error parse user")
 	}
 
-	err := mongoservice.CreatUser(user)
+	err := UserService.CreatUser(user)
 	if err != nil{
 		return c.Status(500).JSON(fiber.Map{"error": err})
 		
@@ -29,7 +32,7 @@ func CreatUserHandler(c *fiber.Ctx)error{
 func GetOneUserHandler(c *fiber.Ctx)error{
 	id:= c.Params("id")
 
-	userFund, err:= mongoservice.GetUser(id)
+	userFund, err:= UserService.GetUser(id)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err})
 	}
@@ -43,7 +46,7 @@ func UpdateUserHandler(c *fiber.Ctx)error{
 	if err := c.BodyParser(user); err != nil{
 		return c.Status(500).JSON(fiber.Map{"error": err})
 	}
-	result, err := mongoservice.UpdateUser(id, user)
+	result, err := UserService.UpdateUser(id, user)
 	if err!= nil{
 		return c.Status(500).JSON(fiber.Map{"error": err})
 	}
@@ -54,7 +57,7 @@ func UpdateUserHandler(c *fiber.Ctx)error{
 func DeleteUserHanbler(c *fiber.Ctx)error{
 	id := c.Params("id")
 
-	result, err := mongoservice.DeleteUser(id)
+	result, err := UserService.DeleteUser(id)
 	if err!= nil{
 		return c.Status(500).JSON(fiber.Map{"error": err})
 	}

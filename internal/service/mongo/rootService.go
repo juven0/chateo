@@ -1,7 +1,13 @@
 package mongoservice
 
-import "chat/configs"
+import (
+	"chat/configs"
+	"sync"
+)
 
-var mongoClient = configs.MongoConnection()
+var (
+	mongoClient = configs.MongoConnection()
+	once sync.Once
+)
 
 const tableName = "chat"

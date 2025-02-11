@@ -7,16 +7,29 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func setupConversationRepository() {
-	mongorepository.InitConversationRepository(mongoClient.Database(tableName))
+type ConvesationService struct{
+	repo mongorepository.MongoConvesationRepository
 }
 
-func CreatConvesation(conversation *mongomodels.Conversation) error{
-	setupConversationRepository()
-	return mongorepository.CreatConvesation(conversation)
+var(
+	ConvesationServiceInstance *ConvesationService
+)
+
+func GetConversationServiceInstance()*ConvesationService{
+	once.Do(func() {
+		repository := mongorepository.NewConversationRepository(mongoClient.Database(tableName))
+		ConvesationServiceInstance = &ConvesationService{
+			repo: *repository,
+		}
+	})
+	return ConvesationServiceInstance
 }
 
-func DeleteConverstion(idConversation string)(*mongo.DeleteResult, error){
-	setupConversationRepository()
-	return mongorepository.DeleteConversation(idConversation)
+func (s *ConvesationService)CreatConvesation(conversation *mongomodels.Conversation) error{
+	return s.repo.CreatConvesation(conversation)
+}
+
+func (s *ConvesationService)DeleteConverstion(idConversation string)(*mongo.DeleteResult, error){
+
+	return s.repo.DeleteConversation(idConversation)
 }
