@@ -8,7 +8,7 @@ import (
 
 func Routes(a *fiber.App){
 	route := a.Group("/api/v1")
-
+	route.Group("/conversation",)
 	route.Get("/",handler.WellcomeHandler)
 	route.Post("/user/create/", handler.CreatUserHandler)
 	route.Get("/user/:id", handler.GetOneUserHandler)
