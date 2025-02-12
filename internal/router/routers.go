@@ -10,7 +10,7 @@ func Routes(a *fiber.App){
 	conversation := route.Group("/conversation")
 	ConversationRoutes(conversation)
 
-	user := route.Group("/user")
+	user := route.Group("/user", )
 	userRoutes(user)
 
 	message := route.Group("/message")

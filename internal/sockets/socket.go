@@ -12,12 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type MessageObject struct {
-    Data  json.RawMessage `json:"data"`
-    From  string `json:"from"`
-    Event string `json:"event"`
-    To    string `json:"to"`
-}
+
 
 func SoketsIO(app *fiber.App) {
 
