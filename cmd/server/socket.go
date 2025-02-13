@@ -4,7 +4,7 @@ import (
 	"chat/internal/sockets"
 
 	"github.com/gofiber/contrib/socketio"
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 )
 
 func SetupWebSocket(app *fiber.App, redisClient sockets.RedisClient) {
