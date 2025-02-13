@@ -22,12 +22,10 @@ func SoketsIO(app *fiber.App) {
         fmt.Printf("Connection event 1 - User: %s", ep.Kws.GetStringAttribute("user_id"))
     })
 
-    // Custom event handling supported
     socketio.On("CUSTOM_EVENT", func(ep *socketio.EventPayload) {
         fmt.Printf("Custom event - User: %s", ep.Kws.GetStringAttribute("user_id"))
     })
 
-    // On message event
     socketio.On(socketio.EventMessage, func(ep *socketio.EventPayload) {
         
         message := MessageObject{}
