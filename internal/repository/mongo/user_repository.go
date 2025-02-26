@@ -13,6 +13,7 @@ import (
 type UserRepository interface {
 	InsertUser(user *mongomodels.User) error
 	GetUser(id string) (mongomodels.User, error)
+	GetUserByEmail(email string) (mongomodels.User, error)
 	UpdateUser(id string, user *mongomodels.User) (*mongo.UpdateResult, error)
 	DeleteUser(id string) (*mongo.DeleteResult, error)
 }
@@ -47,6 +48,16 @@ func  (r *MongoUserRepository)GetUser(id string)(mongomodels.User, error){
 		return mongomodels.User{}, err 
 	}
 	return userFind, nil
+}
+
+func (r *MongoUserRepository)GetUserByEmail(email string)(mongomodels.User, error){
+	filter := bson.D{{Key: "email", Value: email}}
+	var userFind mongomodels.User
+	err := r.collection.FindOne(ctx, filter).Decode(userFind)
+	if err != nil{
+		return mongomodels.User{}, err
+	} 
+	return userFind , nil
 }
 
 func  (r *MongoUserRepository)UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){

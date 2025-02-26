@@ -5,6 +5,7 @@ import (
 	mongorepository "chat/internal/repository/mongo"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	// "go.mongodb.org/mongo-driver/mongo"
 )
 
 type UserService struct {
@@ -33,6 +34,10 @@ func (r *UserService)CreatUser(user *mongomodels.User) error{
 
 func (r *UserService)GetUser(id string)(mongomodels.User, error){
 	return r.repo.GetUser(id)
+}
+
+func (r *UserService)GetUserByEmail(email string)(mongomodels.User, error){
+	return r.repo.GetUserByEmail()
 }
 
 func (r *UserService)UpdateUser(id string, user *mongomodels.User)(*mongo.UpdateResult, error){
